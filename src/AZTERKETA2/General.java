@@ -83,6 +83,14 @@ public class General {
         Instances blindTest = Filter.useFilter(test, rwmv);
         blindTest.setClassIndex(blindTest.numAttributes()-1);
 
+        //Gorde aurrekoak:
+        ConverterUtils.DataSink ds = new ConverterUtils.DataSink(trainPath);
+        ds.write(train);
+        ds = new ConverterUtils.DataSink(testPath);
+        ds.write(test);
+        ds = new ConverterUtils.DataSink(blindPath);
+        ds.write(blindTest);
+
         //AUKERATU KNN PARAMETROAK:
         IBk ibk = new IBk();
         ibk.buildClassifier(train);
