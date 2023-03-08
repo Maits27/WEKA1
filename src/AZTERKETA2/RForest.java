@@ -89,7 +89,7 @@ public class RForest {
             Evaluation evaluation = new Evaluation(train);
             evaluation.evaluateModel(rf, test);
             double f = evaluation.fMeasure(minIndex);
-            System.out.println(f);
+            System.out.println(i+" "+f);
             if(f>fmax){
                 trees=i;
                 fmax=f;
