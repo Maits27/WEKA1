@@ -152,7 +152,7 @@ public class Praktika4 {
                 //System.out.println("d: " + parameterSelection.getBestClassifierOptions()[5].split("\"")[1].split(" ")[0].split("\\.")[2]);
 
 
-                // ******************* GridSerch erebiliz ******************************************************************
+                // ******************* GridSearch erebiliz ******************************************************************
                 //TODO
 
 
