@@ -74,8 +74,10 @@ public class Azterketa {
                 pk.setExponent(i);
                 smo.setKernel(pk);
                 smo.buildClassifier(data);
-                eval.crossValidateModel(smo, data, 3, new Random(1));
+
+                eval.evaluateModel(smo, data);
                 System.out.println(i+" exponentearekin lortutako f-measure: "+eval.weightedFMeasure());
+
                 if(eval.weightedFMeasure()>fmax){
                     expmax=i;
                     fmax=eval.weightedFMeasure();
@@ -92,12 +94,20 @@ public class Azterketa {
             FileWriter f = new FileWriter(evalPath);
             f.append("EBALUAZIO EZ ZINTZOAREN EMAITZAK: \n");
             eval.evaluateModel(smo, data);
-            f.append("KLASE MINORITARIOAREKIKO: \n" +
-                    "PRECISION:" +eval.precision(minIndex)+"\n"+
-                    "RECALL: " +eval.recall(minIndex)+"\n"+
-                    "F-MEASURE: "+eval.fMeasure(minIndex)+"\n");
+            f.append("\nKLASE MINORITARIOAREKIKO: \n" +
+                    "   PRECISION:" +eval.precision(minIndex)+"\n"+
+                    "   RECALL: " +eval.recall(minIndex)+"\n"+
+                    "   F-MEASURE: "+eval.fMeasure(minIndex)+"\n");
             f.append("NAHASMEN MATRIZEA: \n"+eval.toMatrixString());
             f.close();
+
+            System.out.println("\nKlase minoritarioa ("+data.classAttribute().value(minIndex)+"): "+minCount);
+            System.out.println(" Exponente optimoa: "+expmax);
+            System.out.println("\nKLASE MINORITARIOAREKIKO: \n" +
+                    "   PRECISION:" +eval.precision(minIndex)+"\n"+
+                    "   RECALL: " +eval.recall(minIndex)+"\n"+
+                    "   F-MEASURE: "+eval.fMeasure(minIndex)+"\n");
+            System.out.println("NAHASMEN MATRIZEA: \n"+eval.toMatrixString());
 
             //Test iragarpenak
             source = new ConverterUtils.DataSource(blindPath);
