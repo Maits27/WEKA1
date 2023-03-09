@@ -25,7 +25,7 @@ public class UnPoquitoDeTo {
     public static void main(String[] args) throws Exception{
         String dataPath, testPath, trainPath, blindPath, modelPath, emaPath;
         if(args.length==0){
-            dataPath = "E:\\EHES\\WEKAPRUEBAS\\data_supervised.arff";
+            dataPath = "E:\\EHES\\WEKAPRUEBAS\\neutrons.arff";
             trainPath = "E:\\EHES\\WEKAPRUEBAS\\trainAzterketaProba.arff";
             testPath = "E:\\EHES\\WEKAPRUEBAS\\testAzterketaProba.arff";
             blindPath = "E:\\EHES\\WEKAPRUEBAS\\blindAzterketaProba.arff";
@@ -46,7 +46,7 @@ public class UnPoquitoDeTo {
 
         Resample r = new Resample();
         r.setRandomSeed(42);
-        r.setSampleSizePercent(80);
+        r.setSampleSizePercent(70);
         r.setNoReplacement(true);
         r.setInvertSelection(false);
         r.setInputFormat(data);
@@ -54,7 +54,7 @@ public class UnPoquitoDeTo {
         train.setClassIndex(train.numAttributes()-1);
 
         r.setRandomSeed(42);
-        r.setSampleSizePercent(80);
+        r.setSampleSizePercent(70);
         r.setNoReplacement(true);
         r.setInvertSelection(true);
         r.setInputFormat(data);
@@ -71,7 +71,7 @@ public class UnPoquitoDeTo {
         blind.setClassIndex(blind.numAttributes()-1);
 
         //Klasifikadorea ibk
-        IBk ibk = new IBk();
+        IBk ibk= new IBk();
         ibk.buildClassifier(train);
 
         LinearNNSearch euc = new LinearNNSearch();
@@ -94,16 +94,21 @@ public class UnPoquitoDeTo {
         LinearNNSearch daux=null;
         SelectedTag waux=null;
         double fmax=0.0;
+        int it=0;
+
         for(int k=1; k<train.numInstances()/4; k++){
             for(LinearNNSearch d: dist){
                 for (SelectedTag w: weights){
                     ibk.setKNN(k);
-                    ibk.setDistanceWeighting(w);
                     ibk.setNearestNeighbourSearchAlgorithm(d);
+                    ibk.setDistanceWeighting(w);
+                    ibk.buildClassifier(train);
 
                     Evaluation evaluation = new Evaluation(train);
-                    evaluation.crossValidateModel(ibk, train, 10, new Random(1));
+                    evaluation.crossValidateModel(ibk, test, 10, new Random(1));
+
                     double f = evaluation.weightedFMeasure();
+                    System.out.println(it++);
                     if(f>fmax){
                         System.out.println("Lortu da fmeasure maximo berria: "+f);
                         fmax=f;
@@ -145,6 +150,11 @@ public class UnPoquitoDeTo {
         }
 
         bf.append("DATUEI BURUZKO INFORMAZIOA:" +
+                "\n     Instantzia kopurua: " + data.numInstances()+
+                "\n     Atributu kopurua: " + data.numAttributes()+
+                "\n     "+data.attribute(0)+" atributuaren missing balio kopurua: " + data.attributeStats(0).missingCount+
+                "\n     "+data.attribute(0)+" atributuaren unique balio kopurua: " + data.attributeStats(0).uniqueCount+
+                "\n     Klase balio ezberdin kopurua: " + data.numDistinctValues(data.classIndex())+
                 "\n     KLASE MINORITARIOA: " + data.classAttribute().value(minIndex)+
                 "\n     KLASE MINORITARIOAREN MAIZTASUNA: "+minMaiz);
         bf.append("\n AUKERATUTAKO PARAMETROAK IBK KLASIFIKADOREARENTZAT: " +
@@ -152,12 +162,16 @@ public class UnPoquitoDeTo {
                 "\n     DISTANCE: " + daux.getDistanceFunction().getClass()+
                 "\n     WEIGHT: " +waux);
 
-        Evaluation evaluation= new Evaluation(train);
-        evaluation.evaluateModel(asc, test);
+        Evaluation evaluation2= new Evaluation(train);
+        evaluation2.evaluateModel(asc, test);
         bf.append("\n EBALUAZIOA PARAMETRO EKORKETAREKIN:" +
-                "\n     LABURPENA: " + evaluation.toSummaryString()+
-                "\n     KLASE LABURPENA: " +evaluation.toClassDetailsString()+
-                "\n     NAHASMEN MATRIZEA: "+evaluation.toMatrixString());
+                "\n     Accuracy: " + evaluation2.pctCorrect()+
+                "\n     Klase minoritarioaren presizioa: " + evaluation2.precision(minIndex)+
+                "\n     Klase minoritarioaren recall: " + evaluation2.recall(minIndex)+
+                "\n     Klase minoritarioaren fmeasure: " + evaluation2.fMeasure(minIndex)+
+                "\n     " + evaluation2.toSummaryString()+
+                "\n     " +evaluation2.toClassDetailsString()+
+                "\n     "+evaluation2.toMatrixString());
 
         bf.append("\n KLASIFIKATZEKO INSTANTZIAK: ");
         for(int i =0; i<blind.numInstances(); i++){
@@ -165,5 +179,13 @@ public class UnPoquitoDeTo {
         }
 
         bf.close();
+
+        //Gorde datuak ARFF fitxategietan:
+        ConverterUtils.DataSink ds = new ConverterUtils.DataSink(trainPath);
+        ds.write(train);
+        ds = new ConverterUtils.DataSink(testPath);
+        ds.write(test);
+        ds = new ConverterUtils.DataSink(blindPath);
+        ds.write(blind);
     }
 }

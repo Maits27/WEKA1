@@ -84,7 +84,7 @@ public class General2 {
                     ibk.buildClassifier(train);
 
                     Evaluation evaluation = new Evaluation(train);
-                    evaluation.evaluateModel(ibk, test);
+                    evaluation.crossValidateModel(ibk, train, 3, new Random());
 
                     double f = evaluation.weightedFMeasure();
                     if(f>fmax){
