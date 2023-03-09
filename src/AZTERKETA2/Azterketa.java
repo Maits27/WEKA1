@@ -70,12 +70,11 @@ public class Azterketa {
             int expmax=0;
             weka.classifiers.functions.supportVector.PolyKernel pk = new PolyKernel();
             System.out.println("Exponente maximoa aldatu da, orain da: "+expmax);
-            for(int i = 0; i<6; i++){
+            for(int i = 1; i<6; i++){
                 pk.setExponent(i);
                 smo.setKernel(pk);
-                smo.buildClassifier(data);
 
-                eval.evaluateModel(smo, data);
+                eval.crossValidateModel(smo, data, 3, new Random(1));
                 System.out.println(i+" exponentearekin lortutako f-measure: "+eval.weightedFMeasure());
 
                 if(eval.weightedFMeasure()>fmax){
