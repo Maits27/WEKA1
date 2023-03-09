@@ -4,6 +4,7 @@ import weka.attributeSelection.BestFirst;
 import weka.attributeSelection.CfsSubsetEval;
 import weka.classifiers.Classifier;
 import weka.classifiers.Evaluation;
+import weka.classifiers.bayes.NaiveBayes;
 import weka.classifiers.lazy.IBk;
 import weka.classifiers.meta.AttributeSelectedClassifier;
 import weka.classifiers.trees.RandomForest;
@@ -13,6 +14,7 @@ import weka.core.neighboursearch.LinearNNSearch;
 import weka.filters.Filter;
 import weka.filters.unsupervised.attribute.ReplaceWithMissingValue;
 import weka.filters.unsupervised.instance.Randomize;
+import weka.filters.unsupervised.instance.RemovePercentage;
 import weka.filters.unsupervised.instance.Resample;
 
 import java.io.BufferedWriter;
@@ -94,7 +96,6 @@ public class UnPoquitoDeTo {
         LinearNNSearch daux=null;
         SelectedTag waux=null;
         double fmax=0.0;
-        int it=0;
 
         for(int k=1; k<train.numInstances()/4; k++){
             for(LinearNNSearch d: dist){
@@ -108,7 +109,6 @@ public class UnPoquitoDeTo {
                     evaluation.crossValidateModel(ibk, test, 10, new Random(1));
 
                     double f = evaluation.weightedFMeasure();
-                    System.out.println(it++);
                     if(f>fmax){
                         System.out.println("Lortu da fmeasure maximo berria: "+f);
                         fmax=f;
@@ -187,5 +187,45 @@ public class UnPoquitoDeTo {
         ds.write(test);
         ds = new ConverterUtils.DataSink(blindPath);
         ds.write(blind);
+
+        //5 Repeated hold out eta klase minoritarioaren recall bb eta desbiderazioa:
+
+        double rec[] = new double[5];
+        double sumrec =0;
+
+        for(int i=0; i<5; i++){
+            Randomize randomize= new Randomize();
+            randomize.setRandomSeed(i+1);
+            randomize.setInputFormat(data);
+            data= Filter.useFilter(data, randomize);
+
+            RemovePercentage rp = new RemovePercentage();
+            rp.setPercentage(70);
+            rp.setInvertSelection(true);
+            rp.setInputFormat(data);
+            Instances hotrain = Filter.useFilter(data, rp);
+            hotrain.setClassIndex(hotrain.numAttributes()-1);
+
+            rp.setPercentage(70);
+            rp.setInvertSelection(false);
+            rp.setInputFormat(data);
+            Instances hotest = Filter.useFilter(data, rp);
+            hotest.setClassIndex(hotest.numAttributes()-1);
+
+            Classifier nb = new NaiveBayes();
+            nb.buildClassifier(hotrain);
+
+            Evaluation eval= new Evaluation(hotrain);
+            eval.evaluateModel(nb, hotest);
+
+            sumrec=sumrec+eval.recall(minIndex);
+            rec[i]=eval.recall(minIndex);
+        }
+        System.out.println("Bataz besteko recall: "+sumrec/5);
+        double des = 0;
+        for(double recall: rec){des=des+Math.pow((recall-sumrec/5),2);}
+        des= des/(5-1);
+        des=Math.sqrt(des);
+        System.out.println("Desbiderazioa recall parametroan: "+des);
     }
 }
