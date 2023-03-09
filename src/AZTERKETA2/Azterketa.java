@@ -74,7 +74,7 @@ public class Azterketa {
                 pk.setExponent(i);
                 smo.setKernel(pk);
                 smo.buildClassifier(data);
-                eval.crossValidateModel(smo, data, 3, new Random());
+                eval.crossValidateModel(smo, data, 3, new Random(1));
                 System.out.println(i+" exponentearekin lortutako f-measure: "+eval.weightedFMeasure());
                 if(eval.weightedFMeasure()>fmax){
                     expmax=i;
