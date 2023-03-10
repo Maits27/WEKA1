@@ -86,8 +86,8 @@ public class RForest {
         RandomForest rf = new RandomForest();
         double fmax=0.0;
         int trees=1;
-        for(int i=1; i<100; i++){
-            rf.setNumIterations(i); //No se si es este
+        for(int i=1; i<10; i++){
+            rf.setMaxDepth(i); //Es este porque dijo alicia aunque deberia ser Iterations
             rf.buildClassifier(train);
 
             Evaluation evaluation = new Evaluation(train);
