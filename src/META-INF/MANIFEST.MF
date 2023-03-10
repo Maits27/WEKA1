@@ -1,3 +1,3 @@
 Manifest-Version: 1.0
-Main-Class: Praktika2.KfCV
+Main-Class: Praktika5.AtributuHautapen2Mio
 
