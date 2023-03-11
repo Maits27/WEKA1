@@ -95,7 +95,8 @@ public class UnPoquitoDeTo {
         int kaux=0;
         LinearNNSearch daux=null;
         SelectedTag waux=null;
-        double fmax=0.0;
+        double fmax=0;
+
 
         for(int k=1; k<train.numInstances()/4; k++){
             for(LinearNNSearch d: dist){
