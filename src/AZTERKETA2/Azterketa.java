@@ -67,7 +67,7 @@ public class Azterketa {
             Evaluation eval = new Evaluation(data);
             weka.classifiers.functions.SMO smo = new SMO();
             double fmax =0;
-            double expmax=0;
+            double expmax=0; //TODO ES DOUBLE!!!!!!!!!!!!!!!!!!!!!!!!!!!SINO VA MAL!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
             weka.classifiers.functions.supportVector.PolyKernel pk = new PolyKernel();
             System.out.println("Exponente maximoa aldatu da, orain da: "+expmax);
             for(double i = 1; i<6; i++){

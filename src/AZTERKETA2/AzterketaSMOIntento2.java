@@ -54,7 +54,7 @@ public class AzterketaSMOIntento2 {
             smo.setKernel(pk);
             double expMax=1; //TODO ES DOUBLE!!!!!!!!!!!!!!!!!!!!!!!!!!!SINO VA MAL!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
             double fmax=0.0;
-            for(int i =1; i<6; i++){
+            for(double i =1; i<6; i++){
                 pk.setExponent(i);
                 smo.setKernel(pk);
                 smo.buildClassifier(data);
