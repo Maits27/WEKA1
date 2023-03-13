@@ -52,7 +52,7 @@ public class AzterketaSMOIntento2 {
             PolyKernel pk = new PolyKernel();
             SMO smo = new SMO();
             smo.setKernel(pk);
-            int expMax=1;
+            double expMax=1; //TODO ES DOUBLE!!!!!!!!!!!!!!!!!!!!!!!!!!!SINO VA MAL!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
             double fmax=0.0;
             for(int i =1; i<6; i++){
                 pk.setExponent(i);
@@ -68,6 +68,7 @@ public class AzterketaSMOIntento2 {
                     System.out.println("Fmeasure maximo berria, exponente maximo berria: "+ i);
                 }
             }
+
             pk.setExponent(expMax);
             smo.setKernel(pk);
             smo.buildClassifier(data);
